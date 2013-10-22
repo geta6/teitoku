@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset='utf-8'>
+  <title>Teitoku</title>
+  <script src='jquery.js'></script>
+  <style>
+    *              { margin:0; padding:0; border:none; -webkit-font-smoothing:antialised; }
+    html, body     { width:100%; font:12px/39px Helvetica,Arial,Sans-Serif; background:black; }
+    section        { position:fixed; top:0; left:0; right:0; bottom:0; background:black; }
+    #capture       { display:none; }
+    #msg           { z-index:10; position:fixed; top:50%; left:0; right:0; margin-top:-50px; width:100%; height:100px; line-height:100px; text-align:center; color:white; font-weight:bold; font-size:18px; }
+    #modal         { z-index:99; position:fixed; top:50%; left:50%; display:none; margin-top:-50px; margin-left:-80px; width:160px; height:100px; line-height:100px; font-size:14px; background:rgba(0,0,0,.84); border-radius:5px; font-weight:bold; color:white; text-align:center; }
+    #info          { z-index:11; position:fixed; left:10px; right:10px; bottom:5px; font-size:12px; color:white; }
+    #info .helper  { float:left; }
+    #info .version { float:right; }
+    iframe         { z-index:20; position:relative; display:none; width:100% ;height:100%; }
+    embed          { z-index:30; position:fixed; top:0; left:0; right:0; bottom:0; display:none; width:100%; height:100%; background:transparent; }
+    #help          { z-index:40; position:fixed; top:0; left:0; right:0; bottom:0; display:none; background:rgba(255, 255, 255, .84); font-size:14px; overflow:hidden; }
+    #helpin        { position:absolute; top:10px; left:10px; right:10px; bottom:10px; margin-right:-30px; padding-right:30px; overflow-y:scroll; }
+    #help dt       { display:inline-block; font:bold 14px monospace; padding:5px 10px; background:white; }
+    #help dd       { display:inline-block; padding: 5px 10px; }
+  </style>
+</head>
+<body>
+  <section>
+    <input id='capture' type='file' nwdirectory>
+    <iframe frameborder=0 onload="$(window).trigger('cast', this.contentWindow)"></iframe>
+    <embed wmode='opaque' menu='false' quality='autohigh' bgcolor='#000000' allowscriptaccess='always' type='application/x-shockwave-flash'></embed>
+    <div id='msg'></div>
+    <div id='modal'></div>
+    <div id='help'>
+      <div id='helpin'>
+        <h1>Help</h1>
+        <dl>
+          <dt>H</dt><dd>このヘルプを表示/非表示</dd>
+          <br>
+          <dt>M</dt><dd>画面を元のサイズに戻す</dd>
+          <br>
+          <dt>C</dt><dd>画面キャプチャを撮影する(初回のみ保存場所を聞きます)</dd>
+          <br>
+          <dt>F</dt><dd>常に最前面表示にする/オフにする</dd>
+          <br>
+          <dt>E</dt><dd>設定情報を消去、初期化(本当に実行するか確認します)</dd>
+        </dl>
+        <p class='version'></p>
+        <p><a href='javascript:window.openExternal("http://makebooth.com/i/1xkN1")'>teitoku @ makebooth</a></p>
+      </div>
+    </div>
+    <div id='info'>
+      <span class='helper'>「H」キーでヘルプを表示</span>
+      <span class='version'></span>
+    </div>
+  </section>
+  <script>
+
+    try {
+      var os = require('os')
+        , fs = require('fs')
+        , path = require('path')
+        , gui = require('nw.gui')
+        , index = gui.Window.get()
+        , float = false
+        , gwin = { w: index.width, h: index.height }
+        , info = require('./package.json')
+        , addr = 'http://www.dmm.com/netgame/social/-/gadgets/=/app_id=854854/'
+        , user = localStorage.getItem('user')
+        , pass = localStorage.getItem('pass')
+        , save = localStorage.getItem('save')
+        , auth = false
+        , digg = false
+        , intv = null;
+
+      // Init
+
+      $('.version').html(info.name + ' Version ' + info.version);
+      $('#msg').html('Waiting network connection...');
+      $('iframe').attr('src', addr);
+
+
+      // Value Check
+
+      if (save != null && !fs.existsSync(save)) {
+        save = null;
+        localStorage.removeItem('save');
+      }
+
+
+      // Util
+
+      window.kancolle = function (src) {
+        if (src) {
+          $('#msg').html('Loaded!!');
+          clearInterval(intv);
+          $('iframe').fadeOut(240, function(){ $('iframe').remove(); });
+          $('embed').attr({ src: src, base: src.split(/[^\/]*\.swf/)[0] });
+          $('embed').css('display', 'block');
+        }
+      };
+
+      window.abortion = function (src) {
+        if (src == 'http://www.adobe.com/go/getflashplayer') {
+          var msg = [
+            'IE以外のブラウザ向けFlashをインストールしてください',
+            '<a href="#" onclick="window.openExternal(\'http://get.adobe.com/flashplayer/otherversions/\')">Install</'+'a>'
+          ];
+          $('#msg').html(msg.join('<br>'));
+          clearInterval(intv);
+        }
+      };
+
+      window.openExternal = function (uri) {
+        gui.Shell.openExternal(uri);
+      };
+
+      window.restore = function () {
+        window.displayModal('Original size.');
+        index.leaveFullscreen();
+        index.resizeTo(gwin.w, gwin.h);
+      };
+
+      window.capture = function () {
+        var doCapture = function (next) {
+          index.capturePage(function (img) {
+            var getSaving = function () {
+              var data = img.replace(/^data:image\/(png|jpg|jpeg);base64,/, '');
+              if (fs.existsSync(save) && fs.statSync(save).isDirectory()) {
+                fs.writeFile(path.resolve(save, 'teitoku_' + (new Date().getTime()+0) + '.png'), data, 'base64', function (err) {
+                  if (err) {
+                    localStorage.removeItem('save');
+                    window.displayModal('Errors on save');
+                  }
+                });
+              } else {
+                localStorage.removeItem('save');
+                window.displayModal('Errors on save');
+              }
+            };
+            if (typeof next == 'function') {
+              next(getSaving);
+            } else {
+              getSaving();
+            }
+          }, 'png');
+        };
+        if (save == null || !fs.existsSync(save)) {
+          doCapture(function(saving){
+            alert('キャプチャの保存場所を設定します(初回のみ)');
+            $('#capture').trigger('click');
+            $('#capture').on('change', function(){
+              save = $(this).val();
+              localStorage.setItem('save', save);
+              alert('設定しました、次回より自動的に "' + save + '" へ保存されます')
+              saving();
+            });
+          });
+        } else {
+          doCapture();
+        }
+      }
+
+      window.floatToggle = function () {
+        float = !float;
+        index.setAlwaysOnTop(float);
+        window.displayModal(float?'Floating.':'Release.');
+      };
+
+      window.resetSetting = function () {
+        if (window.confirm('ログイン情報を含む全ての設定情報を消去します')) {
+          localStorage.removeItem('time');
+          localStorage.removeItem('user');
+          localStorage.removeItem('pass');
+          localStorage.removeItem('save');
+          alert('全ての設定情報を消去しました、アプリケーションを再起動してください');
+        }
+      };
+
+      window.displayModal = function (message) {
+        $('#modal').text(message).fadeIn(60, function(){
+          setTimeout(function(){
+            $('#modal').fadeOut(60);
+          }, 720);
+        });
+      };
+
+      // Event
+
+      $(window).on('cast', function (event, win) {
+        $('#msg').html('Loading...');
+        //console.log('cast', win.location.href);
+        if (win.location.href == 'data:text/html,chromewebdata') {
+          throw new Error('Network disabled.');
+        } else if (auth) {
+          $(window).trigger('chakunin', win);
+        } else {
+          if (user == null && pass == null) {
+            $(window).trigger('formauth', win);
+          } else {
+            $(window).trigger('autoauth', win);
+          }
+        }
+      });
+
+      $(window).on('formauth', function(event, win) {
+        //console.log('formauth');
+        $('iframe').fadeIn(240).contents().find('form').on('submit', function (event) {
+          $('#msg').html('Authenticate...');
+          $('iframe').fadeOut(240);
+          user = $('iframe').contents().find('#login_id').val();
+          pass = $('iframe').contents().find('#password').val();
+          localStorage.setItem('user', user);
+          localStorage.setItem('pass', pass);
+        });
+      });
+
+      $(window).on('autoauth', function(event, win) {
+        $('#msg').html('Authenticate...');
+        var data = {};
+        $('iframe').contents().find('input').each(function(index, input){
+          var key = $(input).attr('name');
+          data[key] = (key == 'login_id' ? user : (key == 'password' ? pass : $(input).val()));
+        });
+        $.ajax('https://www.dmm.com/my/-/login/auth/', {
+          data: data,
+          error: function() {
+            auth = false;
+            throw new Error('Authentication Error.')
+          },
+          success: function(body, stat, xhr) {
+            // 緊急手当
+            if (body.match(/<title>(.*?)<\/title>/)[1] == 'DMM.com ログイン') {
+              auth = false;
+              $(window).trigger('formauth', win);
+            } else {
+              auth = true;
+              $('iframe').attr('src', addr);
+            }
+          }
+        });
+      });
+
+      $(window).on('chakunin', function (event, win) {
+        $('#msg').html('Loading...');
+        //console.log('chakunin');
+        if (!digg) {
+          digg = true;
+          addr = $('iframe').contents().find('#game_frame').attr('src');
+          $('iframe').attr('src', addr);
+        } else {
+          intv = setInterval(function () {
+            window.location = "javascript:window.kancolle($('iframe').contents().find('embed').attr('src'));";
+            setTimeout(function(){
+              window.location = "javascript:window.abortion($('iframe').contents().find('a').attr('href'));";
+            }, 250);
+          }, 500);
+        }
+      });
+
+    } catch (e) {
+
+      //console.error(e);
+      $('#msg').html(e.message);
+
+    }
+
+    $(function() {
+      $(window).on('keyup', function (event) {
+        switch(event.keyCode) {
+          case 72: /* H */
+            $('#help').stop().fadeToggle(120);
+            break;
+          case 77: /* M */
+            window.restore();
+            break;
+          case 67: /* C */
+            window.capture();
+            break;
+          case 70: /* F */
+            window.floatToggle();
+            break;
+          case 69: /* E */
+            window.resetSetting();
+            break;
+          //default:
+          //  console.log(event.keyCode);
+        }
+      });
+    });
+
+  </script>
+</body>
+</html>

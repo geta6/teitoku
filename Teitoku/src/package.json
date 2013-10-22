@@ -1,0 +1,27 @@
+{
+  "name": "Teitoku",
+  "main": "index.html",
+  "description": "艦これ専用ブラウザー",
+  "version": "0.2.9",
+  "window": {
+    "width": 800,
+    "height": 480,
+    "title": "Teitoku",
+    "frame": true,
+    "toolbar": false,
+    "icon": "icon.png",
+    "page-cache": true
+  },
+  "webkit": {
+    "plugin": true
+  },
+  "chromium-args": "--disable-bundled-ppapi-flash",
+  "maintainers": [
+    {
+      "name": "geta6",
+      "email": "getakura@gmail.com",
+      "web": "http://www.geta6.net"
+    }
+  ],
+  "contributors": []
+}

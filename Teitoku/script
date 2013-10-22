@@ -1,0 +1,79 @@
+#!/usr/bin/env coffee
+
+fs = require 'fs'
+{exec} = require 'child_process'
+
+pkg = require './src/package.json'
+version = pkg.version
+
+console.log "Build #{version}"
+
+src = []
+src.push "#{f}" for f in fs.readdirSync 'src' when '.' isnt f.substr 0, 1
+app = 'tmp/app.nw'
+
+exec "cd src; zip ../tmp/app.nw #{src.join ' '}; cd ..", (err, stdout, stderr) ->
+  console.error err if err
+
+  # OSX
+  exec 'rm -r build/osx/Teitoku.app', ->
+    exec 'cp -r lib/osx/Teitoku.app build/osx/Teitoku.app', ->
+      lst = fs.readFileSync 'build/osx/Teitoku.app/Contents/Info.plist', 'utf-8'
+      lst = lst.replace /(CFBundleShortVersionString[.\s\S]*?<string>).*?(<\/string>)/, "$1#{version}$2"
+      fs.writeFileSync 'build/osx/Teitoku.app/Contents/Info.plist', lst
+      fs.createReadStream('tmp/app.nw').pipe fs.createWriteStream 'build/osx/Teitoku.app/Contents/Resources/app.nw'
+      file = "teitoku-#{version}-osx.tar.gz"
+      exec "cd build/osx; tar zcvf #{file} Teitoku.app; mv #{file} ../; cd ../../", ->
+        console.log 'osx done'
+
+  # WIN
+  exec 'rm -r build/win32/Teitoku', ->
+    exec 'cp -r lib/win32 build/win32/Teitoku', ->
+      exec 'cat lib/win32/nw.exe tmp/app.nw > build/win32/Teitoku/Teitoku.exe', ->
+        exec 'rm build/win32/Teitoku/nw.exe', ->
+          file = "teitoku-#{version}-win32.tar.gz"
+          exec "cd build/win32; rm Teitoku/.DS_Store; tar zcvf #{file} Teitoku; mv #{file} ../; cd ../../", ->
+            console.log 'win32 done'
+
+  # LINUX32
+  exec 'rm -r build/linux32/Teitoku', ->
+    exec 'cp -r lib/linux32/ build/linux32/Teitoku', ->
+      exec 'cat lib/linux32/nw tmp/app.nw > build/linux32/Teitoku/teitoku; chmod +x build/linux32/Teitoku/teitoku', ->
+        exec 'rm build/linux32/Teitoku/{nwsnapshot,nw,libffmpegsumo.so}; chmod +x build/linux64/Teitoku/teitoku.desktop', ->
+          file = "teitoku-#{version}-linux32.tar.gz"
+          exec "cd build/linux32; rm Teitoku/.DS_Store; tar zcvf #{file} Teitoku; mv #{file} ../; cd ../../", ->
+            console.log 'linux32 done'
+
+  # LINUX64
+  exec 'rm -r build/linux64/Teitoku', ->
+    exec 'cp -r lib/linux64/ build/linux64/Teitoku', ->
+      exec 'cat lib/linux64/nw tmp/app.nw > build/linux64/Teitoku/teitoku; chmod +x build/linux64/Teitoku/teitoku', ->
+        exec 'rm build/linux64/Teitoku/{nwsnapshot,nw,libffmpegsumo.so}; chmod +x build/linux64/Teitoku/teitoku.desktop', ->
+          file = "teitoku-#{version}-linux64.tar.gz"
+          exec "cd build/linux64; rm Teitoku/.DS_Store; tar zcvf #{file} Teitoku; mv #{file} ../; cd ../../", ->
+            console.log 'linux64 done'
+
+
+
+###
+( ->
+  # OSX
+
+)()
+
+for f in *; do
+  if [[ ${f##*.} =~ 'app' ]]; then
+    APP=$f
+  fi
+done
+
+if [[ -z $APP ]]; then
+  echo 'No app'
+  exit 1
+else
+  killall node-webkit
+fi
+
+zip $APP/Contents/Resources/app.nw `ls | grep -v $APP | tr '\n' ' '` -r
+open $APP
+###
