@@ -12,7 +12,7 @@ src = []
 src.push "#{f}" for f in fs.readdirSync 'src' when '.' isnt f.substr 0, 1
 app = 'tmp/app.nw'
 
-exec "cd src; zip ../tmp/app.nw #{src.join ' '}; cd ..", (err, stdout, stderr) ->
+exec "mkdir tmp; cd src; zip ../tmp/app.nw #{src.join ' '}; cd ..", (err, stdout, stderr) ->
   console.error err if err
 
   # OSX
