@@ -1,0 +1,153 @@
+@import 'nib'
+
+global-reset()
+
+@keyframes scaleout
+  0%
+    transform scale(0.0)
+  100%
+    transform scale(1.0)
+    opacity 0
+
+html, body
+  width 100%
+  height 100%
+  font 12px 'Helvetica Neue', Helvetica, Arial, Sans-Serif
+  background #43A9E1
+  font-smoothing antialiased
+
+.clearfix
+  clearfix()
+
+#shots
+  display none
+
+#modal
+  z-index 12
+  position fixed
+  bottom 10%
+  left 50%
+  display none
+  width 200px
+  height 200px
+  margin-left @height * -0.5
+  background rgba(0,0,0,.6)
+  color white
+  font-size 16px
+  font-weight bold
+  text-align center
+  line-height 200px
+  border-radius 15px
+  font-size 14px
+
+#helps
+  z-index 11
+  position fixed
+  top 0
+  right 0
+  bottom 0
+  left 0
+  display none
+  padding 20px
+  background rgba(255,255,255,0.72)
+  h2
+    margin-bottom 20px
+    font-size 24px
+    font-weight 500
+  dl
+    height 36px
+    color white
+    line-height 36px
+    font-weight bold
+    font-size 14px
+  dt
+    background #1b71a0
+    float left
+    width 60px
+    text-align center
+  dd
+    padding-left 70px
+    background #3da8e3
+    clear right
+  p
+    padding-top 20px
+
+#frame
+  z-index 10
+  position fixed
+  top 0
+  right 0
+  bottom 0
+  left 0
+  display none
+  width 100%
+  height 100%
+
+#waits
+  z-index 9
+  position fixed
+  top 0
+  right 0
+  bottom 0
+  left 0
+  display block
+  width 100%
+  height 100%
+  background #000000
+  transition background 1.2s cubic-bezier(0.215, 0.61, 0.355, 1)
+  &.starting
+    background #43A9E1
+
+#embed
+  z-index 8
+  position fixed
+  top 0
+  right 0
+  bottom 0
+  left 0
+  display block
+  width 100%
+  height 100%
+  background transparent
+  font-size 14px
+  font-weight bold
+  text-align center
+
+  table
+    position fixed
+    top 50%
+    left 50%
+    width 320px
+    height 200px
+    margin (@height * -0.5) (@width * -0.5)
+
+  td
+    vertical-align middle
+    background #D3D7D7
+    box-shadow 0 0 3px black
+    border-radius 3px
+
+  div
+    padding 20px
+
+.loads
+  z-index 0
+  position absolute
+  top 50%
+  left 50%
+  width 96px
+  height 96px
+  margin-top @height * -0.5
+  margin-left @width * -0.5
+  background-color white
+  border-radius 100%
+  animation scaleout 1.2s infinite cubic-bezier(0.215, 0.61, 0.355, 1)
+
+.vinfo
+  position fixed
+  bottom 0
+  right 0
+  padding 20px
+  font-weight bold
+  color #F9F9F9
+

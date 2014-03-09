@@ -1,0 +1,12 @@
+.Apple*
+.DS_Store
+*.swp
+*.diff
+
+/vendor
+/build
+/lib
+
+/npm-debug.log
+/node_modules
+

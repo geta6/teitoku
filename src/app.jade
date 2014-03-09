@@ -1,0 +1,49 @@
+doctype html
+html
+  head
+    meta(charset='utf-8')
+    meta(name='version', content=pkg.version)
+    title= pkg.name
+    link(rel='stylesheet', href='app.css')
+
+  body
+    #waits
+      .loads
+      .metas
+      .vinfo #{pkg.name} #{pkg.version}
+
+    #embed
+      table: tr: td: div
+        h1 IE以外のブラウザ向け Flash Player をダウンロードしてください
+        p: a(href='http://www.adobe.com/go/getflashplayer', rel='external') ダウンロード
+        p: a(href='http://helpx.adobe.com/jp/flash-player/kb/235971.html#main_b', rel='external') ドキュメント
+
+    #modal
+
+    input#shots(type='file', nwdirectory)
+
+    #helps
+      h2 #{pkg.name} #{pkg.version}
+      dl
+        dt H
+        dd このヘルプを表示/非表示
+        dt F
+        dd 画面を常に最前面表示/解除
+        dt M
+        dd リサイズした画面を元のサイズへ戻す
+        dt R
+        dd 画面をリロードする (確認します)
+        dt C
+        dd 画面キャプチャを撮影する (初回のみ保存場所を聞きます)
+        dt E
+        dd 設定情報を消去、初期化します (確認します)
+      .clearfix
+      p
+        span #{pkg.name} using&nbsp;
+        a(href='https://github.com/rogerwang/node-webkit', rel='external') node-webkit
+        span &nbsp;#{pkg.nwversion}
+
+    script(src='lib/jquery.js')
+    script(src='lib/swfobject.js')
+    script(src='app.js')
+
