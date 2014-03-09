@@ -5,7 +5,7 @@ fs = require 'fs'
 path = require 'path'
 
 gui = require 'nw.gui'
-gui.Window.get().showDevTools()
+#gui.Window.get().showDevTools()
 
 
 $win = $ window
