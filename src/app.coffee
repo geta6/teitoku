@@ -90,13 +90,18 @@ $win.on 'app:start', ->
 
 $win.on 'app:run', (event, embed) ->
   console.debug 'app:run'
-  swfobject.embedSWF (($ embed).attr 'src'), 'embed', '100%', '100%', '12.0.0', 'lib/expressInstall.swf', null,
+  flash = {}
+  param =
     menu: 'false'
     base: ($ embed).attr 'base'
-    wmode: 'opaque'
+    scale:'noborder'
+    salign:'L'
+    wmode: 'window'
     bgcolor: '#000000'
-    quality: 'autohigh'
+    quality: 'best'
     allowscriptaccess: 'always'
+  attrb = {}
+  swfobject.embedSWF (($ embed).attr 'src'), 'embed', '100%', '100%', '12.0.0', 'lib/expressInstall.swf', flash, param, attrb
   setTimeout ->
     $waits.fadeOut 600
   , 200

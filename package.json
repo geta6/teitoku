@@ -10,8 +10,7 @@
     "toolbar": false,
     "frame": true,
     "width": 800,
-    "height": 480,
-    "position": "mouse"
+    "height": 480
   },
   "webkit": {
     "plugin": true,
