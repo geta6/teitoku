@@ -11,11 +11,11 @@
     "frame": true,
     "width": 800,
     "height": 480,
-    "position": "mouse",
-    "page-cache": true
+    "position": "mouse"
   },
   "webkit": {
-    "plugin": true
+    "plugin": true,
+    "page-cache": true
   },
   "dependencies": {
     "grunt": "^0.4.3",

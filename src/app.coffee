@@ -5,7 +5,7 @@ fs = require 'fs'
 path = require 'path'
 
 gui = require 'nw.gui'
-#gui.Window.get().showDevTools()
+gui.Window.get().showDevTools()
 
 
 $win = $ window
@@ -67,7 +67,7 @@ $win.on 'app:login', ->
       localStorage.setItem 'login_id', $forms.find('#login_id').val()
       localStorage.setItem 'password', $forms.find('#password').val()
       $frame.fadeOut queue: no, duration: 480, always: ->
-        ($ window).trigger 'app:init'
+        $win.trigger 'app:init'
 
 
 $win.on 'app:start', ->
@@ -113,7 +113,6 @@ $win.on 'app:modal', (event, message) ->
 
 
 $ ->
-
 
   $doc.on 'contextmenu', '#embed', (event) ->
     event.preventDefault()
