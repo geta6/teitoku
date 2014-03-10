@@ -12,6 +12,8 @@ grunt
 
 [download versions](http://geta6.net/teitoku)
 
-## contribute
+## contributors
 
-歓迎、PRください
+```
+@shokai
+```
