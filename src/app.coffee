@@ -90,21 +90,19 @@ $win.on 'app:start', ->
 
 $win.on 'app:run', (event, embed) ->
   console.debug 'app:run'
-  flash = {}
   param =
-    menu: 'false'
-    base: ($ embed).attr 'base'
-    scale:'noborder'
-    salign:'L'
-    wmode: 'window'
-    bgcolor: '#000000'
-    quality: 'best'
-    allowscriptaccess: 'always'
-  attrb = {}
-  swfobject.embedSWF (($ embed).attr 'src'), 'embed', '100%', '100%', '12.0.0', 'lib/expressInstall.swf', flash, param, attrb
-  setTimeout ->
+    width: '100%'
+    height: '100%'
+    src: $(embed).attr 'src'
+    id: 'frame'
+  swfFrame = $('<iframe>')
+  swfFrame.on 'load', ->
+    window.focus()
     $waits.fadeOut 600
-  , 200
+  $('body').append swfFrame.attr(param).show()
+  setInterval ->
+    window.focus()
+  , 1000
 
 
 $win.on 'app:modal', (event, message) ->
