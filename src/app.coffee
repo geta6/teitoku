@@ -5,7 +5,7 @@ fs = require 'fs'
 path = require 'path'
 
 gui = require 'nw.gui'
-#gui.Window.get().showDevTools()
+gui.Window.get().showDevTools()
 
 
 $win = $ window
@@ -38,24 +38,34 @@ $win.on 'app:init', ->
   $waits.fadeIn 60
 
   unless $frame.size()
-    $frame = ($ '<iframe>').attr id: 'frame', frameborder: 0, marginwidth: 0, marginheight: 0
+    $frame = ($ '<iframe>').attr
+      id: 'frame'
+      frameborder: 0
+      marginwidth: 0
+      marginheight: 0
     ($ 'body').append $frame
 
   $frame.one 'load', ->
-    return $win.trigger 'app:start' unless /\/login\//.test $frame.contents().get(0).baseURI
+    unless /\/login\//.test $frame.contents().get(0).baseURI
+      return $win.trigger 'app:start'
 
     login_id = localStorage.getItem 'login_id'
     password = localStorage.getItem 'password'
-    return $win.trigger 'app:login' unless login_id and password
+
+    unless login_id and password
+      return $win.trigger 'app:login'
 
     $forms = $frame.contents().find 'form.validator'
     $forms.find('#login_id').val login_id
     $forms.find('#password').val password
     $frame.one 'load', ->
-      return $win.trigger 'app:login' if /\/login\//.test $frame.contents().get(0).baseURI
+      if /\/login\//.test $frame.contents().get(0).baseURI
+        return $win.trigger 'app:login'
       return $win.trigger 'app:start'
     $forms.find('input[type=submit]').trigger 'click'
-  $frame.attr 'src', 'http://www.dmm.com/netgame/social/-/gadgets/=/app_id=854854/'
+
+  $frame.attr
+    src: 'http://www.dmm.com/netgame/social/-/gadgets/=/app_id=854854/'
 
 
 $win.on 'app:login', ->
@@ -76,11 +86,12 @@ $win.on 'app:start', ->
   getEmbed = ->
     return $frame.contents().find('iframe').contents().find('embed')
   loading = setInterval ->
-    if (embed = $frame.contents().find('iframe').contents().find 'embed').size()
+    $contents = $frame.contents().find('iframe').contents()
+    if (embed = $contents.find 'embed').size()
       clearInterval loading
       $frame.remove()
       $win.trigger 'app:run', embed
-    else if /Adobe Flash Player/.test $frame.contents().find('iframe').contents().find('#flashWrap').text()
+    else if /Adobe Flash Player/.test $contents.find('#flashWrap').text()
       clearInterval loading
       $frame.remove()
       embed = ($ embed).attr 'src', 'lib/expressInstall.swf'
@@ -94,14 +105,15 @@ $win.on 'app:run', (event, embed) ->
   param =
     menu: 'false'
     base: ($ embed).attr 'base'
-    scale:'noborder'
-    salign:'L'
+    scale: 'noborder'
+    salign: 'L'
     wmode: 'window'
     bgcolor: '#000000'
     quality: 'best'
     allowscriptaccess: 'always'
   attrb = {}
-  swfobject.embedSWF (($ embed).attr 'src'), 'embed', '100%', '100%', '12.0.0', 'lib/expressInstall.swf', flash, param, attrb
+  swfobject.embedSWF (($ embed).attr 'src'), 'embed', '100%', '100%',
+    '12.0.0', 'lib/expressInstall.swf', flash, param, attrb
   setTimeout ->
     $waits.fadeOut 600
   , 200
@@ -131,7 +143,8 @@ $ ->
 
   capture = (savepath, data) ->
     if (fs.existsSync savepath) and (fs.statSync savepath).isDirectory()
-      fs.writeFile (path.resolve savepath, "teitoku_#{Date.now()}.png"), data, 'base64', (err) ->
+      dest = path.resolve savepath, "teitoku_#{Date.now()}.png"
+      fs.writeFile dest, data, 'base64', (err) ->
         if err
           localStorage.removeItem 'savepath'
           $win.trigger 'app:modal', err.message
@@ -166,7 +179,10 @@ $ ->
 
       when 70 # F, Float
         gui.Window.get().setAlwaysOnTop $state.float = !$state.float
-        $win.trigger 'app:modal', if $state.float then 'Float.' else 'Release.'
+        if $state.float
+          $win.trigger 'app:modal', 'Float.'
+        else
+          $win.trigger 'app:modal', 'Release.'
 
       when 72 # H, Help
         $helps.fadeToggle 120

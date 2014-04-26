@@ -6,9 +6,11 @@ module.exports = (grunt) ->
   grunt.loadNpmTasks 'grunt-contrib-stylus'
   grunt.loadNpmTasks 'grunt-contrib-uglify'
   grunt.loadNpmTasks 'grunt-node-webkit-builder'
+  grunt.loadNpmTasks 'grunt-coffeelint'
+  grunt.loadNpmTasks 'grunt-notify'
 
   grunt.registerTask 'default', [
-    'copy', 'jade', 'stylus', 'coffee', 'uglify', 'nodewebkit'
+    'copy', 'jade', 'stylus', 'coffeelint', 'coffee', 'uglify', 'nodewebkit'
   ]
 
   pkg = grunt.file.readJSON 'package.json'
@@ -60,6 +62,42 @@ module.exports = (grunt) ->
           src: [ '*.coffee', '**/*.coffee' ]
           dest: 'lib'
           ext: '.js'
+        }]
+
+    coffeelint:
+      options:
+        arrow_spacing:
+          level: 'error'
+        colon_assignment_spacing:
+          spacing: left: 0, right: 1
+          level: 'error'
+        cyclomatic_complexity:
+          level: 'warn'
+        empty_constructor_needs_parens:
+          level: 'error'
+        indentation:
+          value: 2
+        max_line_length:
+          value: 79
+        newlines_after_classes:
+          level: 'error'
+        no_empty_functions:
+          level: 'warn'
+        no_empty_param_list:
+          level: 'error'
+        no_interpolation_in_single_quotes:
+          level: 'warn'
+        no_unnecessary_double_quotes:
+          level: 'warn'
+        no_unnecessary_fat_arrows:
+          level: 'error'
+        space_operators:
+          level: 'warn'
+      assets:
+        files: [{
+          expand: yes
+          cwd: 'src'
+          src: [ '*.coffee', '**/*.coffee' ]
         }]
 
     uglify:
