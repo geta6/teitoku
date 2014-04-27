@@ -5,8 +5,8 @@ fs = require 'fs'
 path = require 'path'
 
 gui = require 'nw.gui'
-gui.Window.get().showDevTools()
 
+#gui.Window.get().showDevTools()
 
 $win = $ window
 $doc = $ document
@@ -101,22 +101,18 @@ $win.on 'app:start', ->
 
 $win.on 'app:run', (event, embed) ->
   console.debug 'app:run'
-  flash = {}
-  param =
-    menu: 'false'
-    base: ($ embed).attr 'base'
-    scale: 'noborder'
-    salign: 'L'
-    wmode: 'window'
-    bgcolor: '#000000'
-    quality: 'best'
-    allowscriptaccess: 'always'
-  attrb = {}
-  swfobject.embedSWF (($ embed).attr 'src'), 'embed', '100%', '100%',
-    '12.0.0', 'lib/expressInstall.swf', flash, param, attrb
-  setTimeout ->
+  swfFrame = ($ '<iframe>').attr
+    width: '100%'
+    height: '100%'
+    src: $(embed).attr 'src'
+    id: 'frame'
+  .one 'load', ->
+    $win.focus()
     $waits.fadeOut 600
-  , 200
+  ($ 'body').append swfFrame.show()
+
+  $win.on 'blur', ->
+    $win.focus()
 
 
 $win.on 'app:modal', (event, message) ->

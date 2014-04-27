@@ -7,7 +7,7 @@
   "window": {
     "title": "Teitoku",
     "icon": "img/icon.png",
-    "toolbar": true,
+    "toolbar": false,
     "frame": true,
     "width": 800,
     "height": 480
