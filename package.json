@@ -1,6 +1,6 @@
 {
   "name": "Teitoku",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "nwversion": "0.9.2",
   "description": "kancolle browser",
   "main": "app.html",
