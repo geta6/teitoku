@@ -17,7 +17,7 @@ grunt compress
 
 ## download
 
-[download versions](http://geta6.net/teitoku)
+[download releases](https://github.com/geta6/teitoku/releases)
 
 ## contributors
 
