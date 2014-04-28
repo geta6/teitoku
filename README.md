@@ -3,6 +3,7 @@
 ## build
 
 ```
+npm i -g grunt-cli
 npm i
 bower i
 grunt
