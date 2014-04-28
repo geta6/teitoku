@@ -5,6 +5,7 @@ module.exports = (grunt) ->
   grunt.loadNpmTasks 'grunt-contrib-coffee'
   grunt.loadNpmTasks 'grunt-contrib-stylus'
   grunt.loadNpmTasks 'grunt-contrib-uglify'
+  grunt.loadNpmTasks 'grunt-contrib-compress'
   grunt.loadNpmTasks 'grunt-node-webkit-builder'
   grunt.loadNpmTasks 'grunt-coffeelint'
   grunt.loadNpmTasks 'grunt-notify'
@@ -121,4 +122,17 @@ module.exports = (grunt) ->
         mac_icns: 'var/teitoku.icns'
         build_dir: 'build'
       src: [ 'lib/**/*' ]
+
+    compress:
+      osx:
+        options:
+          archive: "release/teitoku-#{pkg.version}-osx.zip"
+        files: [{
+          expand: yes
+          cwd: 'build/releases/Teitoku/mac'
+          src: [ '**' ]
+          dest: 'Teitoku'
+          filter: 'isFile'
+        }]
+
 

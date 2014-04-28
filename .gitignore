@@ -3,6 +3,7 @@
 *.swp
 *.diff
 
+/release
 /vendor
 /build
 /lib
