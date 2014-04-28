@@ -131,8 +131,37 @@ module.exports = (grunt) ->
           expand: yes
           cwd: 'build/releases/Teitoku/mac'
           src: [ '**' ]
-          dest: 'Teitoku'
+          dest: 'teitoku-osx'
           filter: 'isFile'
         }]
-
+      win:
+        options:
+          archive: "release/teitoku-#{pkg.version}-win32.zip"
+        files: [{
+          expand: yes
+          cwd: 'build/releases/Teitoku/win'
+          src: [ '**' ]
+          dest: 'teitoku-win32'
+          filter: 'isFile'
+        }]
+      linux32:
+        options:
+          archive: "release/teitoku-#{pkg.version}-linux32.zip"
+        files: [{
+          expand: yes
+          cwd: 'build/releases/Teitoku/linux32'
+          src: [ '**' ]
+          dest: 'teitoku-linux32'
+          filter: 'isFile'
+        }]
+      linux64:
+        options:
+          archive: "release/teitoku-#{pkg.version}-linux64.zip"
+        files: [{
+          expand: yes
+          cwd: 'build/releases/Teitoku/linux64'
+          src: [ '**' ]
+          dest: 'teitoku-linux64'
+          filter: 'isFile'
+        }]
 

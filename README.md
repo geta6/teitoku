@@ -8,6 +8,12 @@ bower i
 grunt
 ```
 
+## release (archiving)
+
+```
+grunt compress
+```
+
 ## download
 
 [download versions](http://geta6.net/teitoku)
@@ -17,3 +23,7 @@ grunt
 ```
 @shokai
 ```
+
+## license
+
+MIT
