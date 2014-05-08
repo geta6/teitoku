@@ -1,5 +1,7 @@
 # Teitoku
 
+![](https://raw.githubusercontent.com/geta6/teitoku/master/var/teitoku.png)
+
 ## build
 
 ```
