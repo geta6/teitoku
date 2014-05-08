@@ -1,11 +1,10 @@
 'use strict'
 
-
 fs = require 'fs'
 path = require 'path'
 gui = require 'nw.gui'
 
-# gui.Window.get().showDevTools()
+#gui.Window.get().showDevTools()
 
 $win = $ window
 $doc = $ document
@@ -95,7 +94,7 @@ $win.on 'app:start', ->
     else if /Adobe Flash Player/.test $contents.find('#flashWrap').text()
       clearInterval loading
       #$frame.remove()
-      embed = ($ embed).attr 'src', 'lib/expressInstall.swf'
+      # embed = ($ embed).attr 'src', 'lib/expressInstall.swf'
       $win.trigger 'app:run', embed
   , 200
 
@@ -105,7 +104,7 @@ $win.on 'app:run', (event, embed) ->
   $frame.attr('src', $(embed).attr 'src').one 'load', ->
     $ $frame.show().get(0).contentWindow
     .on 'blur', ->
-      ($ @).focus()
+      ($ this).focus()
     .on 'keyup', (event) ->
       $win.trigger 'app:keyup', event.keyCode
     .focus()
@@ -148,7 +147,7 @@ $win.on 'app:keyup', (event, keyCode) ->
             alert 'キャプチャの保存場所を設定します(初回のみ)'
             ($ '#shots')
               .one 'change', ->
-                localStorage.setItem 'savepath', savepath = ($ @).val()
+                localStorage.setItem 'savepath', savepath = ($ this).val()
                 alert "設定しました、次回より自動的に'#{savepath}'へ保存されます"
                 $win.trigger 'app:capture', savepath: savepath, data: data
               .trigger 'click'

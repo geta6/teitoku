@@ -1,1 +1,0 @@
-../../vendor/bower/swfobject/swfobject/swfobject.js

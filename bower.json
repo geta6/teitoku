@@ -2,7 +2,6 @@
   "name": "Teitoku",
   "private": true,
   "dependencies": {
-    "jquery": "~2.1.0",
-    "swfobject": "*"
+    "jquery": "~2.1.0"
   }
 }
