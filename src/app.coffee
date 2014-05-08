@@ -4,7 +4,7 @@ fs = require 'fs'
 path = require 'path'
 gui = require 'nw.gui'
 
-#gui.Window.get().showDevTools()
+# gui.Window.get().showDevTools()
 
 $win = $ window
 $doc = $ document
@@ -89,27 +89,29 @@ $win.on 'app:start', ->
     $contents = $frame.contents().find('iframe').contents()
     if (embed = $contents.find 'embed').size()
       clearInterval loading
-      #$frame.remove()
-      $win.trigger 'app:run', embed
-    else if /Adobe Flash Player/.test $contents.find('#flashWrap').text()
+      $win.trigger 'app:run', embed: embed, error: no
+    else if /Flash Player/.test embed = $contents.find('#flashWrap').html()
       clearInterval loading
-      #$frame.remove()
-      # embed = ($ embed).attr 'src', 'lib/expressInstall.swf'
-      $win.trigger 'app:run', embed
+      $win.trigger 'app:run', embed: embed, error: yes
   , 200
 
 
-$win.on 'app:run', (event, embed) ->
+$win.on 'app:run', (event, options) ->
   console.debug 'app:run'
-  $frame.attr('src', $(embed).attr 'src').one 'load', ->
-    $ $frame.show().get(0).contentWindow
-    .on 'blur', ->
-      ($ this).focus()
-    .on 'keyup', (event) ->
-      $win.trigger 'app:keyup', event.keyCode
-    .focus()
+  if options.error
+    $frame.html options.embed
     $waits.fadeOut queue: no, duration: 600, always: ->
       $waits.remove()
+  else
+    $frame.attr('src', ($ options.embed).attr 'src').one 'load', ->
+      $ $frame.show().get(0).contentWindow
+      .on 'blur', ->
+        ($ this).focus()
+      .on 'keyup', (event) ->
+        $win.trigger 'app:keyup', event.keyCode
+      .focus()
+      $waits.fadeOut queue: no, duration: 600, always: ->
+        $waits.remove()
 
 
 $win.on 'app:modal', (event, message) ->
